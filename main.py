@@ -1,11 +1,18 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 
-app = FastAPI(title="task-template")
+from sync import build_result, fetch_orders
+
+app = FastAPI(title="orders-sync")
 
 
 @app.get("/")
-def root():
-    return {"status": "ok"}
+@app.get("/sync")
+def sync():
+    try:
+        orders = fetch_orders()
+    except Exception as exc:
+        raise HTTPException(status_code=502, detail=f"source unavailable: {exc}")
+    return build_result(orders)
 
 
 @app.get("/health")

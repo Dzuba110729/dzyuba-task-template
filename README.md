@@ -1,11 +1,13 @@
-# task-template
+# orders-sync
 
-Шаблон FastAPI-сервиса для быстрого деплоя на Render.
+Мини-синхронизатор заявок: забирает сырые заявки, нормализует телефоны к `+7XXXXXXXXXX`,
+отбрасывает невалидные и схлопывает дубли по телефону (максимальный `amount`,
+при равенстве — более поздний `created_at`).
 
-Локальный запуск:
+- `GET /` или `GET /sync` — результат `{clients, stats}`
+- `GET /health` — проверка живости
 
-    python3 -m venv .venv && source .venv/bin/activate
-    pip install -r requirements.txt
-    uvicorn main:app --reload
+Идемпотентность: результат считается заново из источника детерминированно
+(без накопления состояния), поэтому повторный запуск даёт тот же ответ.
 
-Render: Web Service, Docker (Dockerfile в корне), переменная PORT подставляется сама.
+Секреты и настройки — только через переменные окружения (`ORDERS_URL`), `.env` в `.gitignore`.
